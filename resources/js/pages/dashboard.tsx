@@ -1,7 +1,7 @@
 import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/react';
+import { type BreadcrumbItem } from '@/index';
+import { Head, usePage } from '@inertiajs/react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -10,7 +10,26 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+
 export default function Dashboard() {
+
+    const { auth } = usePage<{ auth: { user: any; roles: string[] } }>().props;
+
+    const hasRole = (role: string) => auth.roles?.includes(role);
+
+    let welcomeText = 'Welcome';
+    if (hasRole('super-admin')) {
+        welcomeText = 'Welcome, Super Admin!';
+    } else if (hasRole('admin')) {
+        welcomeText = 'Welcome, Admin!';
+    } else if (hasRole('moderator')) {
+        welcomeText = 'Welcome, Moderator!';
+    } else if (hasRole('user')) {
+        welcomeText = 'Welcome, User!';
+    } else if (hasRole('guest')) {
+        welcomeText = 'Welcome, Guest!';
+    }
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
@@ -28,6 +47,11 @@ export default function Dashboard() {
                 </div>
                 <div className="relative min-h-[100vh] flex-1 overflow-hidden rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border">
                     <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
+                    <div className="flex h-full items-center justify-center">
+                        <div className="text-neutral-500 dark:text-neutral-400">
+                             <p>{welcomeText}</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </AppLayout>
